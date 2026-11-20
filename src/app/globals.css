@@ -34,3 +34,4 @@ input,textarea,select{border:1px solid #dfe5d6;border-radius:6px;padding:10px 12
   .sidebar-bottom { top: 18px; bottom: auto; }
   .page-heading > div:first-child { min-width: 0; }
 }
+.date-filters{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin:0 0 22px;min-width:0}.date-filters legend{font-weight:600;padding:0 6px}.date-filter-fields{display:flex;flex-wrap:wrap;gap:12px}.date-filter-fields label{display:grid;gap:6px;flex:1;min-width:150px;font-size:12px}.date-filter-fields input,.date-filter-fields select{width:100%;min-width:0;padding:10px;border:1px solid var(--border);border-radius:6px;background:white;color:var(--ink)}.date-filter-presets{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}.date-filter-error{color:#963e32;margin:12px 0 0}.print-actions a[aria-disabled="true"]{opacity:.5;cursor:not-allowed}.review-area>.date-filters{text-align:left}
