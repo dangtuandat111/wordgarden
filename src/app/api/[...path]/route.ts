@@ -5,6 +5,8 @@ import { db } from '@/lib/db';
 import { checkOrigin, currentUser, HttpError } from '@/lib/user';
 import { entrySchema, normalizeTerm, scheduleReview, csvCell } from '@/lib/model';
 import { lookupCambridge } from '@/lib/cambridge';
+import { dailyPractice, submitPractice } from '@/lib/practice-service';
+import { relatedWords } from '@/lib/related';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 type Context = { params: Promise<{ path: string[] }> };
@@ -25,6 +27,21 @@ async function handle(req: Request, ctx: Context) {
     checkOrigin(req);
     const user = await currentUser();
     const userId = user.id;
+    if (resource === 'practice' && path.length === 1 && req.method === 'POST') {
+      const data = z.object({ timezone: z.string().max(100).refine(value => {
+        try { new Intl.DateTimeFormat('en', { timeZone: value }); return true; } catch { return false; }
+      }) }).strict().parse(await json(req));
+      return NextResponse.json(await dailyPractice(userId, data.timezone), { headers: { 'Cache-Control': 'no-store' } });
+    }
+    if (resource === 'practice' && id && action === 'answer' && path.length === 3 && req.method === 'POST') {
+      const data = z.object({ answer: z.string().trim().min(1).max(200) }).strict().parse(await json(req));
+      return NextResponse.json(await submitPractice(userId, id, data.answer));
+    }
+    if (resource === 'entries' && id && action === 'related' && path.length === 3 && req.method === 'GET') {
+      const entry = await db.entry.findFirst({ where: { id, userId } });
+      if (!entry) throw new HttpError(404, 'Không tìm thấy từ.');
+      return NextResponse.json(await relatedWords(userId, entry.term), { headers: { 'Cache-Control': 'no-store' } });
+    }
     if (resource === 'reset' && path.length === 1 && req.method === 'POST') {
       if (req.headers.get('origin') !== new URL(process.env.AUTH_URL || 'http://localhost:3080').origin) throw new HttpError(403, 'Nguồn yêu cầu không hợp lệ.');
       z.object({ confirmation: z.literal('RESET WORDGARDEN') }).strict().parse(await json(req));

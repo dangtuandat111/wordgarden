@@ -16,6 +16,12 @@ An entry requires a nonempty `term`; `definition` may be empty. `normalizedTerm`
 
 `content` is validated by `src/lib/model.ts`: optional `phonetic`, `partOfSpeech`, `meaningVi`, `sentence`, `sentenceVi`, `contextNote`, `sourceUrl`, `dictionaryUrl`, `notes`; up to 15 `tags`; up to two `examples` with nonempty English text and optional Vietnamese text. `definitionSource` is one of `Cambridge Dictionary`, `Cambridge (đối chiếu thủ công)`, `Tự nhập`, or `Chưa có nghĩa`. Zod defines length limits and defaults; API consumers should read that schema before adding fields. Folder names are unique per user.
 
+## Daily practice storage
+
+`PracticeSession` belongs to a user, with a unique `(userId, day)` and the timezone used to create it. Its ordered `PracticeQuestion` rows snapshot the term, sentence, masked prompt, meanings, entry ID and entry version. The entry ID is deliberately not a cascading relation: deleting an entry preserves the session's fixed shape and allows submission to be marked skipped. Each question records one submitted answer, correctness or skipped status, and timestamp. A row lock and atomic version check ensure answer submission and review scheduling happen once together.
+
+`RelatedCache` stores Cambridge relationship evidence as JSON per `(userId, normalizedTerm)`, with a retrieval timestamp. Successful retrieval is reused for 24 hours; older evidence is a fallback during fetch failure. Saved words are filtered at response time. All new records cascade when the user is reset. JSON/CSV formats remain unchanged and omit sessions/caches.
+
 ## Review schedule
 
 New entries have stage 0 and `nextReviewAt` at creation. When remembered, the next interval uses the current stage in `[1, 3, 7, 14, 30]` days and stage increments up to 5. When forgotten, stage returns to 0 and the next date is tomorrow. `reviewedAt` records the last review. Every edit or review increments `version` to reject stale writes.
