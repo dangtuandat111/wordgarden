@@ -17,6 +17,8 @@ credentials/
 *.keystore
 
 # Generated output and personal data.
+# Machine-specific daily resource measurements and reset notes.
+/docs/resources-and-reset.md
 *.tsbuildinfo
 backups/
 test-results/

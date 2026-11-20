@@ -1,5 +1,12 @@
 # Verification record
 
+## Local resource notes — 20 November 2026
+
+- Kept `docs/resources-and-reset.md` on disk for personal daily measurements, removed it from the Git index, and added an exact ignore rule. Removed published documentation links to the local-only file.
+- Verified the file remains on disk, is ignored, and is absent from the Git index. Checked changed documentation links and whitespace.
+- Reviewed the six selected paths for sensitive content; staged-content and existing-history Gitleaks scans passed with redacted output. Publication is limited to these documentation/tracking changes; unfinished daily-practice work remains local.
+- Application tests and build were not run because this changes only documentation and Git tracking. No release, deployment, or history rewrite is included; earlier commits still contain the file. Rescan the final staged content and committed history before pushing.
+
 ## Initial Git publication preparation — 20 November 2026
 
 - Initialized the local `main` branch and verified personal GitHub account `dangtuandat111` (`User`). GitHub CLI 2.105.0 stores its authentication in the system keyring; Git author identity uses the account's public name and GitHub noreply email.
@@ -18,7 +25,7 @@
 
 ## Resource and reset checks — 20 November 2026
 
-- Measured CPU/RAM, folder size, database, volume and image usage; see `docs/resources-and-reset.md` for figures and shared-cache scope.
+- Measured CPU/RAM, folder size, database, volume and image usage; machine-specific figures are retained only in local notes.
 - TypeScript passed; 11/11 unit tests passed, including cleanup preview, wrong confirmation and a build junction pointing outside the build folder.
 - Docker production build passed. App/database healthy; the real account's 1 entry remains intact.
 - Reset verified with real Prisma/PostgreSQL in separate database `wordgarden_reset_verification`: confirmation/origin guards, cascading content/review deletion, account isolation, old tokens returning 401, and a fresh workspace with 3 default folders. Verification database removed afterward.

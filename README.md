@@ -1,7 +1,5 @@
 # Wordgarden
 
-Xem [tài nguyên máy và reset/dọn dữ liệu](docs/resources-and-reset.md) để kiểm tra dung lượng, dừng dịch vụ hoặc tạo lại bản local sạch.
-
 Wordgarden is a local English vocabulary notebook. Save a word with its original sentence, add a meaning when available, and review due flashcards. PostgreSQL stores the data; an optional Chrome/Edge extension captures words while you read.
 
 ## Start locally

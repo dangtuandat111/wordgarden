@@ -1,6 +1,6 @@
 # Operations and troubleshooting
 
-For measured resource usage, in-app data reset, extension cleanup, and the scoped PowerShell cleanup script, see [resources and reset](resources-and-reset.md).
+Machine-specific resource measurements and daily notes are kept locally and excluded from Git. Use `docker stats --no-stream` to inspect current container usage.
 
 Run `docker compose up -d` to start existing images, `docker compose restart web` to restart the current image, and `docker compose up -d --build` after code changes. Check `docker compose ps`, `docker compose logs --tail 80 web`, and `Invoke-RestMethod http://localhost:3080/api/health`. `docker compose down` stops services and retains the named database volume. **`docker compose down -v` deletes it.** Startup order is healthy database, successful one-shot migration, then web.
 
