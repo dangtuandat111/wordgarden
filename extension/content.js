@@ -1,4 +1,6 @@
 (() => {
+  // Restore with the web flag after the feature-record acceptance checks pass.
+  const cambridgeVisible = false;
   if (window.__wordgardenInstalled) return;
   window.__wordgardenInstalled = true;
   const host = document.createElement('div');
@@ -10,7 +12,7 @@
   wrapper.style.flexWrap = 'wrap';
   const save = document.createElement('button'); save.textContent = '＋ Lưu từ';
   const lookup = document.createElement('button'); lookup.textContent = 'Cambridge ↗';
-  wrapper.append(save, lookup); shadow.append(style, wrapper); document.documentElement.append(host);
+  wrapper.append(save); if (cambridgeVisible) wrapper.append(lookup); shadow.append(style, wrapper); document.documentElement.append(host);
   const status = document.createElement('p');
   status.style.cssText = 'margin:0;padding:0 5px;flex-basis:100%;max-width:270px;color:#6c8757;font:11px/1.6 Arial,sans-serif;';
   wrapper.append(status);
@@ -49,7 +51,7 @@
     host.style.display = 'block'; host.style.left = `${Math.max(8, Math.min(range.left, innerWidth - 240))}px`; host.style.top = `${Math.min(Math.max(8, range.bottom + 8), innerHeight - 55)}px`;
   });
   document.addEventListener('scroll', () => { host.style.display = 'none'; }, { passive: true });
-  if (location.hostname === 'dictionary.cambridge.org') {
+  if (cambridgeVisible && location.hostname === 'dictionary.cambridge.org') {
     function addButtons() {
       document.querySelectorAll('.def-block').forEach(block => {
         if (block.querySelector('.wordgarden-save-sense')) return;

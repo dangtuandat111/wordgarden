@@ -18,3 +18,4 @@ The index below lists records as they are created. Do not pre-populate it with h
 | Feature | Status | Summary |
 | --- | --- | --- |
 | [Daily practice](daily-practice/README.md) | verified | Daily sentence practice and optional Cambridge-related words. |
+| [Hide unready enrichment](hide-unready-enrichment/README.md) | verified | Temporarily hide Cambridge and additional-example editing while preserving saved content. |

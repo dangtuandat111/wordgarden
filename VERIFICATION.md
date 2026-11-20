@@ -65,3 +65,17 @@ An isolated disposable PostgreSQL container on `127.0.0.1:55433` accepted the co
 ## Remaining manual checks
 
 Use an isolated development database for API smoke tests and restore drills. Check extension permissions and capture in real Chrome/Edge, Google OAuth with configured credentials, and PDF/physical print through a browser dialog. Proposed work is tracked in [the roadmap](docs/roadmap.md).
+
+## Temporarily hidden enrichment (2026-11-20)
+
+Implemented [Hide unready enrichment](docs/features/hide-unready-enrichment/README.md). Cambridge lookup/navigation, related suggestions, extension sense capture and additional-example editing/prompts are hidden. Existing examples, original sentences and source attribution are preserved. APIs and the database schema are unchanged. This is source verification, not deployment evidence.
+
+- `npm run typecheck`: passed.
+- `npm test`: 18/18 passed, including extension menu rebuild coverage. The initial sandbox run could not create the cleanup test's Windows junction; a permission-adjusted run passed without changing that test.
+- `npm run build`: passed with Windows junction permissions.
+- Available local ESLint review: passed with zero errors/warnings after resolving its 13 pre-existing findings (types, download/navigation links, effect initialization and keyed state). Manual semantic/content review found no blocking issue.
+- Headless Chrome at 1440px and 390px: editor controls hidden; edit save payload retains old examples, dictionary URL and attribution; new manual words save; practice result and print remain usable; settings omit Cambridge guidance. No lookup/related requests or browser errors occurred.
+- Extension content script injected into a mocked Cambridge page in headless Chrome: no lookup/sense controls; ordinary selection capture retains the context sentence. Background startup test verifies only save/edit menus remain.
+- UI checks used mocked API responses only. Temporary server/browser tooling and screenshots are local and ignored. Initial localhost access failed across sandbox boundaries; a permission-adjusted server/browser run passed.
+- Real installed Chrome/Edge extension permissions/update and live Cambridge pages: not exercised. Sonar scanner/configuration and a dedicated connected review tool were not available; the available local ESLint review was run.
+- Staged-content and all-ref history Gitleaks scans: passed with no findings. Full available local review runner also passed (lint, TypeScript, 18 tests and production build). No release or deployment was performed.

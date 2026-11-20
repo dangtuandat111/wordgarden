@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { emptyContent, type EntryInput, type SavedEntry } from '@/lib/model';
-import { practiceSentence } from '@/lib/practice';
+import { featureVisibility } from '@/lib/feature-visibility';
 import type { RelatedWord } from '@/lib/related';
 
 async function request<T>(path: string, body?: unknown): Promise<T> {
@@ -15,15 +15,19 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
 
 const labels = { synonym: 'Đồng nghĩa', antonym: 'Trái nghĩa', 'word-family': 'Họ từ', related: 'Cùng nhóm từ liên quan' };
 export function RelatedWords({ entryId, term, onCreate, refreshKey = 0 }: { entryId: string; term: string; onCreate: (draft: EntryInput) => void; refreshKey?: number }) {
-  const [result, setResult] = useState<{ items: RelatedWord[]; message: string } | null>(null);
-  const [error, setError] = useState('');
+  type Result = { items: RelatedWord[]; message: string };
+  const [response, setResponse] = useState<{ key: string; result: Result | null; error: string } | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const requestKey = `${entryId}:${attempt}:${refreshKey}`;
+  const result = response?.key === requestKey ? response.result : null;
+  const error = response?.key === requestKey ? response.error : '';
   useEffect(() => {
-    let active = true; setResult(null); setError('');
+    let active = true;
     request<{ items: RelatedWord[]; message: string }>(`entries/${encodeURIComponent(entryId)}/related`)
-      .then(value => { if (active) setResult(value); }).catch(err => { if (active) setError(err.message); });
+      .then(value => { if (active) setResponse({ key: requestKey, result: value, error: '' }); })
+      .catch(err => { if (active) setResponse({ key: requestKey, result: null, error: err.message }); });
     return () => { active = false; };
-  }, [entryId, attempt, refreshKey]);
+  }, [entryId, requestKey]);
   return <section className="related-words" aria-label="Gợi ý từ liên quan">
     <h3>Từ liên quan đến “{term}”</h3>
     <p>Chỉ thêm vào thư viện khi bạn chọn tạo và lưu từ.</p>
@@ -45,10 +49,10 @@ type Question = { id: string; position: number; prompt: string; submittedAt: str
   entryId?: string; term?: string; sentence?: string; definition?: string; meaningVi?: string; answer?: string; correct?: boolean | null };
 type Session = { day: string; timezone: string; questions: Question[] };
 
-export function DailyPractice({ entries, onCreate, onEdit, onReviewed }: { entries: SavedEntry[];
-  onCreate: (draft: EntryInput) => void; onEdit: (entry: SavedEntry) => void; onReviewed: () => Promise<void> }) {
+export function DailyPractice({ entries, onCreate, onReviewed }: { entries: SavedEntry[];
+  onCreate: (draft: EntryInput) => void; onReviewed: () => Promise<void> }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [answer, setAnswer] = useState('');
+  const [answerInput, setAnswerInput] = useState<{ key: string; text: string } | null>(null);
   const [feedback, setFeedback] = useState<Question | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -60,22 +64,23 @@ export function DailyPractice({ entries, onCreate, onEdit, onReviewed }: { entri
     setBusy(true); setError('');
     try {
       const next = await request<Session>('practice', { timezone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-      if (loadedDay.current !== next.day) { setFeedback(null); setAnswer(''); }
+      if (loadedDay.current !== next.day) { setFeedback(null); setAnswerInput(null); }
       loadedDay.current = next.day; setSession(next);
     }
     catch (err) { setError((err as Error).message); }
     finally { loading.current = false; setBusy(false); }
   }, []);
   useEffect(() => {
-    void load();
+    const initialLoad = setTimeout(() => void load(), 0);
     // Recheck the server's local-day session on focus and across midnight.
     const focus = () => { if (!document.hidden) void load(); };
     const timer = setInterval(focus, 60000);
     window.addEventListener('focus', focus);
-    return () => { clearInterval(timer); window.removeEventListener('focus', focus); };
+    return () => { clearTimeout(initialLoad); clearInterval(timer); window.removeEventListener('focus', focus); };
   }, [load]);
   const current = session?.questions.find(question => !question.submittedAt);
-  useEffect(() => { setAnswer(''); }, [current?.id]);
+  const answerKey = `${session?.day}:${current?.id}`;
+  const answer = answerInput?.key === answerKey ? answerInput.text : '';
   const shown = feedback || (!current ? session?.questions.at(-1) : null);
   async function submit() {
     if (!current || !answer.trim() || busy) return;
@@ -84,7 +89,7 @@ export function DailyPractice({ entries, onCreate, onEdit, onReviewed }: { entri
     try {
       const updated = await request<Question>(`practice/${current.id}/answer`, { answer });
       setSession(value => value ? { ...value, questions: value.questions.map(question => question.id === updated.id ? updated : question) } : null);
-      setFeedback(updated); setAnswer(''); await onReviewed();
+      setFeedback(updated); setAnswerInput(null); await onReviewed();
     } catch (err) { setError((err as Error).message); }
     finally { loading.current = false; setBusy(false); }
   }
@@ -97,7 +102,7 @@ export function DailyPractice({ entries, onCreate, onEdit, onReviewed }: { entri
     {session && !session.questions.length && <div className="empty-state"><h3>{entries.length ? 'Chưa có câu phù hợp để luyện.' : 'Chưa có từ để luyện.'}</h3><p>{entries.length ? 'Cần từ đến hạn có câu chứa đúng từ hoặc cụm từ đã lưu. Bạn vẫn có thể ôn bằng thẻ lật.' : 'Lưu từ vựng và câu ví dụ trước khi bắt đầu.'}</p><button className="secondary" disabled={busy} onClick={() => void load()}>Kiểm tra lại</button></div>}
     {current && !feedback && <form className="flashcard practice-card" onSubmit={event => { event.preventDefault(); void submit(); }}>
       <label htmlFor="practice-answer">Điền từ còn thiếu</label><blockquote>{current.prompt}</blockquote>
-      <input key={current.id} id="practice-answer" autoComplete="off" autoCapitalize="none" spellCheck={false} maxLength={200} value={answer} onChange={event => setAnswer(event.target.value)} disabled={busy}/>
+      <input key={current.id} id="practice-answer" autoComplete="off" autoCapitalize="none" spellCheck={false} maxLength={200} value={answer} onChange={event => setAnswerInput({ key: answerKey, text: event.target.value })} disabled={busy}/>
       <button className="primary" disabled={busy || !answer.trim()}>Kiểm tra</button>
     </form>}
     {result && <div className="practice-result" role="status">
@@ -105,11 +110,10 @@ export function DailyPractice({ entries, onCreate, onEdit, onReviewed }: { entri
       {result.skipped && <p>Từ đã được sửa, xóa hoặc ôn ở nơi khác. Lịch ôn không thay đổi.</p>}
       <h2>{result.term}</h2><p>Bạn trả lời: {result.answer}</p><blockquote>{result.sentence}</blockquote>
       <p>{result.definition || 'Chưa có nghĩa.'}</p>{result.meaningVi && <p>{result.meaningVi}</p>}
-      {feedback && <button className="primary" onClick={() => { setFeedback(null); setAnswer(''); }}> {current ? 'Câu tiếp theo' : 'Hoàn thành'}</button>}
-      {!result.skipped && result.entryId && <RelatedWords key={result.id} entryId={result.entryId} term={result.term!} onCreate={onCreate} refreshKey={entries.length}/>}
+      {feedback && <button className="primary" onClick={() => { setFeedback(null); setAnswerInput(null); }}> {current ? 'Câu tiếp theo' : 'Hoàn thành'}</button>}
+      {featureVisibility.cambridge && !result.skipped && result.entryId && <RelatedWords key={result.id} entryId={result.entryId} term={result.term!} onCreate={onCreate} refreshKey={entries.length}/>}
     </div>}
     {session && session.questions.length > 0 && !current && !feedback && <p role="status">Đã hoàn thành bài luyện hôm nay. Ngày mai quay lại nhé.</p>}
     {session && session.questions.some(question => question.submittedAt) && <details><summary>Kết quả đã làm</summary>{session.questions.filter(question => question.submittedAt).map(question => <p key={question.id}>{question.term}: {question.skipped ? 'Bỏ qua' : question.correct ? 'Đúng' : 'Sai'}</p>)}</details>}
-    {entries.some(entry => !practiceSentence(entry.term, entry.content)) && <p>Bổ sung ví dụ để luyện điền từ. <button className="text-button" onClick={() => onEdit(entries.find(entry => !practiceSentence(entry.term, entry.content))!)}>Bổ sung ví dụ</button></p>}
   </section>;
 }

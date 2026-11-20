@@ -12,21 +12,26 @@ test('capture credential is scoped to one extension, expires, and detects tamper
   assert.throws(() => verifyCaptureToken(token + 'x', extensionId, secret, now));
   assert.throws(() => verifyCaptureToken('not-a-token', extensionId, secret, now));
 });
+type CaptureResult = { ok: boolean; message: string };
+type CaptureBody = { term: string; definition: string; folderId: string | null; content: {
+  sentence: string; sourceUrl: string; examples: { en: string; vi: string }[] } };
+type Sender = { id: string; url: string; tab?: { id: number } };
 function background(fetcher: typeof fetch) {
-  const storage: Record<string, any> = { appUrl: 'http://localhost:3080', captureToken: 'capture-credential', defaultFolderId: 'work' };
-  const opened: unknown[] = [], calls: { path: string; body: any }[] = [];
-  let listener: (...args: any[]) => any;
+  const storage: { appUrl: string; captureToken: string; defaultFolderId: string; failedCapture?: { term: string } | null; lastResult?: CaptureResult } = { appUrl: 'http://localhost:3080', captureToken: 'capture-credential', defaultFolderId: 'work' };
+  const menus: { id: string }[] = [{ id: 'lookup-word' }];
+  const opened: unknown[] = [], calls: { path: string; body: CaptureBody }[] = [];
+  let listener: (message: unknown, sender: Sender, respond: (value: CaptureResult) => void) => boolean | undefined;
   const chrome = {
-    storage: { local: { setAccessLevel: async () => {}, get: async () => ({ ...storage }), set: async (data: any) => Object.assign(storage, data) } },
+    storage: { local: { setAccessLevel: async () => {}, get: async () => ({ ...storage }), set: async (data: Partial<typeof storage>) => Object.assign(storage, data) } },
     permissions: { contains: async () => true },
     runtime: { id: extensionId, getURL: (path: string) => `chrome-extension://${extensionId}/${path}`, onInstalled: { addListener: () => {} }, onMessage: { addListener: (fn: typeof listener) => { listener = fn; } } },
-    contextMenus: { onClicked: { addListener: () => {} } },
+    contextMenus: { removeAll: (done: () => void) => { menus.length = 0; done(); }, create: (menu: { id: string }) => menus.push(menu), onClicked: { addListener: () => {} } },
     action: { setBadgeText: async () => {}, setBadgeBackgroundColor: async () => {} },
     tabs: { create: async (data: unknown) => opened.push(data) },
   };
   vm.runInNewContext(readFileSync('extension/background.js', 'utf8'), { chrome, URL, URLSearchParams, AbortSignal, TypeError, fetch: async (path: string, options: RequestInit) => { calls.push({ path, body: options.body ? JSON.parse(String(options.body)) : undefined }); return fetcher(path, options); } });
-  const message = (data: unknown, sender = { id: extensionId, url: 'https://example.com/article', tab: { id: 1 } }) => new Promise<any>(resolve => listener(data, sender, resolve));
-  return { storage, opened, calls, message };
+  const message = (data: unknown, sender = { id: extensionId, url: 'https://example.com/article', tab: { id: 1 } }) => new Promise<CaptureResult>(resolve => listener(data, sender, resolve));
+  return { storage, opened, calls, message, menus };
 }
 test('one-click save writes through the API without opening a form or tab', async () => {
   const bg = background(async () => new Response(JSON.stringify({ id: 'entry', message: 'Đã lưu', duplicate: false }), { status: 201 }));
@@ -40,11 +45,16 @@ test('one-click save writes through the API without opening a form or tab', asyn
 test('network failure reports failure and retains the last capture for explicit retry', async () => {
   const bg = background(async () => { throw new TypeError('offline'); });
   const result = await bg.message({ type: 'quick-save', term: 'resilient', sentence: 'A resilient team.' });
-  assert.equal(result.ok, false); assert.equal(bg.storage.failedCapture.term, 'resilient');
-  assert.equal(bg.storage.lastResult.ok, false); assert.equal(bg.opened.length, 0);
+  assert.equal(result.ok, false); assert.equal(bg.storage.failedCapture?.term, 'resilient');
+  assert.equal(bg.storage.lastResult?.ok, false); assert.equal(bg.opened.length, 0);
 });
 test('Cambridge capture retains only two real examples', async () => {
   const bg = background(async () => new Response(JSON.stringify({ id: 'entry', message: 'Đã lưu' }), { status: 201 }));
   await bg.message({ type: 'quick-save', term: 'take off', definition: 'To leave the ground.', examples: ['First.', 'Second.', 'Third.'] }, { id: extensionId, url: 'https://dictionary.cambridge.org/dictionary/english/take-off', tab: { id: 1 } });
   assert.equal(bg.calls[0].body.definition, 'To leave the ground.'); assert.equal(bg.calls[0].body.content.examples.length, 2);
+});
+
+test('worker startup rebuilds menus without Cambridge and retains ordinary capture actions', () => {
+  const bg = background(async () => new Response('{}'));
+  assert.deepEqual(bg.menus.map(menu => menu.id), ['save-word', 'edit-word']);
 });

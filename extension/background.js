@@ -1,12 +1,16 @@
+// Temporary visibility gate; see docs/features/hide-unready-enrichment/README.md.
+const cambridgeVisible = false;
 // Keep capture credentials out of content scripts and the websites being read.
 chrome.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' }).catch(() => {});
-chrome.runtime.onInstalled.addListener(() => {
+function refreshContextMenus() {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({ id: 'save-word', title: 'Lưu ngay “%s” vào Wordgarden', contexts: ['selection'] });
-    chrome.contextMenus.create({ id: 'lookup-word', title: 'Tra “%s” trên Cambridge', contexts: ['selection'] });
+    if (cambridgeVisible) chrome.contextMenus.create({ id: 'lookup-word', title: 'Tra “%s” trên Cambridge', contexts: ['selection'] });
     chrome.contextMenus.create({ id: 'edit-word', title: 'Mở form lưu “%s”…', contexts: ['selection'] });
   });
-});
+}
+// Rebuild persisted menus on service-worker startup, including extension reloads.
+refreshContextMenus();
 function appOrigin(value) {
   const url = new URL(value);
   if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))) throw new Error('Dùng HTTPS hoặc địa chỉ localhost cho ứng dụng.');
@@ -82,7 +86,7 @@ async function showResult(tabId, result) {
 }
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const term = (info.selectionText || '').trim().slice(0, 200);
-  if (info.menuItemId === 'lookup-word') { await chrome.tabs.create({ url: `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(term.replace(/\s+/g, '-'))}` }); return; }
+  if (info.menuItemId === 'lookup-word') { if (!cambridgeVisible) return; await chrome.tabs.create({ url: `https://dictionary.cambridge.org/dictionary/english/${encodeURIComponent(term.replace(/\s+/g, '-'))}` }); return; }
   let sentence = '';
   if (tab?.id) {
     try {
