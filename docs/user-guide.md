@@ -6,7 +6,7 @@ Open **http://localhost:3080** after starting the project. The left navigation c
 
 While reading “The plane will take off soon,” click **Thêm từ mới**, enter `take off` in **Từ / cụm từ**, add the original sentence, choose a **Thư mục**, and click **Lưu từ**. A definition is optional. The entry appears in the library and is due for review immediately.
 
-**Tra Cambridge** requests available senses. Tick **Tra Anh–Việt** to try the bilingual page; select a matching sense. If lookup fails, click **Mở trang Cambridge** to compare manually, or save with the meaning blank. Expand the optional fields for an English definition, Vietnamese meaning, pronunciation, source link, context note, notes, tags, and up to two extra examples. Example translations are optional. The app does not translate sentences automatically.
+Expand **Bổ sung nghĩa & bản dịch** for an English definition, Vietnamese meaning, pronunciation, context note, notes, and tags. Cambridge controls and additional-example editing are temporarily hidden. Previously saved examples and source attribution remain visible and are preserved when editing. Original context sentences can still be entered or edited. The app does not translate sentences automatically.
 
 ## Find and maintain entries
 
@@ -18,17 +18,15 @@ Open settings using **Lưu từ khi lướt web** at the top right. Under **Qu�
 
 Choose **Ôn tập** on the left. Read the front, press **Lật thẻ xem nghĩa**, then **Đã nhớ** or **Chưa nhớ**. **Ẩn tiếng Việt** toggles translations. The card back also allows editing. Only due cards in the current folder appear; see [review scheduling](data-model.md#review-schedule).
 
-## Daily sentence practice and related words
+## Daily sentence practice
 
 Choose **Luyện tập hôm nay** to practice up to ten due words from the whole library, oldest due first. The app uses your browser's timezone for the daily date. A fixed session is saved when eligible questions exist; reload or return later to resume it. Completing it does not create another session that day. An empty library starts no session.
 
 Each question masks every exact occurrence of the saved word or phrase in its original sentence or an example. Enter the English answer and press **Kiểm tra**. Grading ignores case, Unicode composition and extra whitespace, but does not accept synonyms, inflections or spelling errors. Correct answers advance the existing review schedule; incorrect answers reset it to tomorrow. Submitting a question again does not change scheduling twice. If the word was edited, deleted or reviewed elsewhere, the question is skipped without changing its schedule.
 
-Words without a suitable sentence remain available in **Ôn tập**. Use **Bổ sung ví dụ** to add a sentence containing the exact saved word. Newly saved entries keep the usual immediate due date and do not join an already created daily session.
+Words without a suitable sentence remain available in **Ôn tập**. Edit **Câu gốc / ngữ cảnh** to add a sentence containing the exact saved word. Newly saved entries keep the usual immediate due date and do not join an already created daily session.
 
-Word details and submitted practice answers show up to five optional **Từ liên quan** suggestions from Cambridge. Labels distinguish explicit synonyms, antonyms and word families from SMART Vocabulary topic relationships. Availability depends on Cambridge's page content and access; the app does not promise every relationship type. Successful results are cached for 24 hours, with older results usable during a source failure. No AI generates meanings or examples.
-
-Press **Tạo từ** to open an editable draft. Use **Tra Cambridge** or enter a meaning and examples yourself, then **Lưu từ** to add it. Closing the form adds nothing. Previously saved terms are excluded from suggestions. Daily sessions and suggestion caches are not included in JSON/CSV exports; use a database backup to preserve them.
+Cambridge-related suggestions and their **Tạo từ** actions are temporarily hidden. Daily sessions and suggestion caches are not included in JSON/CSV exports; use a database backup to preserve them. Restoration requirements are tracked in the [roadmap](roadmap.md#temporarily-hidden-enrichment).
 
 ## Print and move content
 

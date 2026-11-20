@@ -1,8 +1,8 @@
 # Functional workflows
 
-## Manual save and Cambridge lookup
+## Manual save and retained Cambridge backend
 
-The editor collects a term, optional definition, folder, and content. **Tra Cambridge** calls `POST /api/lookup`; the server fetches public HTML, parses at most 24 senses and two examples per sense, and returns a URL/status/message. An HTTP error, timeout, or changed markup returns an unavailable status. The learner can still save with an empty definition. `POST /api/entries` validates content, checks folder ownership and duplicates, then creates a due entry. Invalid input returns 400, missing folder 400, duplicate 409.
+The editor collects a term, optional definition, folder, and content. Cambridge UI controls are temporarily hidden; no lookup request is issued by the active editor. The retained lookup implementation calls `POST /api/lookup`; the server fetches public HTML, parses at most 24 senses and two examples per sense, and returns a URL/status/message. An HTTP error, timeout, or changed markup returns an unavailable status. The learner can still save with an empty definition. `POST /api/entries` validates content, checks folder ownership and duplicates, then creates a due entry. Invalid input returns 400, missing folder 400, duplicate 409.
 
 ## Extension capture
 
@@ -20,4 +20,4 @@ The UI sends the entry's `version` with `PATCH /api/entries/:id`. The server che
 
 Opening **Luyện tập hôm nay** creates or resumes the user's local-date session of up to ten eligible due entries from the whole library. Questions use saved context or examples, hide the exact term, and submit answers to the server for grading. A question row lock and entry version guard atomically record the first result and update the existing schedule. Duplicate submissions return that result. Edited/deleted/reviewed entries are skipped. Empty libraries or no suitable sentences create no session.
 
-After submission or in word details, Cambridge relationship suggestions are loaded separately from practice. The learner opens a draft with **Tạo từ**, selects or enters meaning/examples, then explicitly saves. Fetch failures do not block practice, and cached source evidence may be used. No AI, automatic translation, or automatic entry creation is involved.
+Cambridge relationship suggestions are temporarily unmounted in both practice results and word details, so neither view requests them. The retained implementation loads them separately from practice. The learner opens a draft with **Tạo từ**, selects or enters meaning/examples, then explicitly saves. Fetch failures do not block practice, and cached source evidence may be used. No AI, automatic translation, or automatic entry creation is involved.

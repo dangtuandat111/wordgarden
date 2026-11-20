@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 import { db } from '@/lib/db';
 import { checkOrigin, currentUser, HttpError } from '@/lib/user';
-import { entrySchema, normalizeTerm, scheduleReview, csvCell } from '@/lib/model';
+import { entrySchema, normalizeTerm, scheduleReview, csvCell, type Content } from '@/lib/model';
 import { lookupCambridge } from '@/lib/cambridge';
 import { dailyPractice, submitPractice } from '@/lib/practice-service';
 import { relatedWords } from '@/lib/related';
@@ -104,7 +104,7 @@ async function handle(req: Request, ctx: Context) {
       const entries = await db.entry.findMany({ where: { userId, ...(ids ? { id: { in: ids } } : {}) }, include: { folder: true }, orderBy: { createdAt: 'desc' } });
       if (url.searchParams.get('format') === 'csv') {
         const rows = [['Từ', 'Từ loại', 'Nghĩa Anh-Anh', 'Nghĩa tiếng Việt', 'Câu gốc', 'Dịch câu', 'Ví dụ 1', 'Dịch ví dụ 1', 'Ví dụ 2', 'Dịch ví dụ 2', 'Thư mục', 'Ghi chú', 'Nguồn nghĩa', 'Link bài đọc', 'Link từ điển', 'Ngày lưu']];
-        for (const e of entries) { const c = e.content as Record<string, any>; rows.push([e.term, c.partOfSpeech, e.definition, c.meaningVi, c.sentence, c.sentenceVi, c.examples?.[0]?.en, c.examples?.[0]?.vi, c.examples?.[1]?.en, c.examples?.[1]?.vi, e.folder?.name, c.notes, c.definitionSource, c.sourceUrl, c.dictionaryUrl, e.createdAt.toISOString()].map(x => String(x || ''))); }
+        for (const e of entries) { const c = e.content as Content; rows.push([e.term, c.partOfSpeech, e.definition, c.meaningVi, c.sentence, c.sentenceVi, c.examples?.[0]?.en, c.examples?.[0]?.vi, c.examples?.[1]?.en, c.examples?.[1]?.vi, e.folder?.name, c.notes, c.definitionSource, c.sourceUrl, c.dictionaryUrl, e.createdAt.toISOString()].map(x => String(x || ''))); }
         return new Response('\uFEFF' + rows.map(row => row.map(csvCell).join(',')).join('\r\n'), { headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': 'attachment; filename="wordgarden.csv"', 'Cache-Control': 'no-store' } });
       }
       return new Response(JSON.stringify({ format: 'wordgarden', version: 1, exportedAt: new Date(), entries }, null, 2), { headers: { 'Content-Type': 'application/json', 'Content-Disposition': 'attachment; filename="wordgarden.json"', 'Cache-Control': 'no-store' } });
