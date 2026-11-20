@@ -12,7 +12,7 @@ export const contentSchema = z.object({
 export type Content = z.infer<typeof contentSchema>;
 export const entrySchema = z.object({ term: z.string().trim().min(1).max(200), definition: z.string().trim().max(3000).default(''), folderId: z.string().nullable().default(null), content: contentSchema });
 export type EntryInput = z.infer<typeof entrySchema>;
-export type SavedEntry = EntryInput & { id: string; version: number; reviewStage: number; nextReviewAt: string; createdAt: string; updatedAt: string };
+export type SavedEntry = EntryInput & { id: string; version: number; reviewStage: number; nextReviewAt: string; reviewedAt: string | null; createdAt: string; updatedAt: string };
 export type Folder = { id: string; name: string; color: string };
 export const emptyContent: Content = contentSchema.parse({});
 export function normalizeTerm(term: string) { return term.trim().toLocaleLowerCase('en').replace(/\s+/g, ' '); }

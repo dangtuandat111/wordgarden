@@ -1,5 +1,14 @@
 # Verification record
 
+## Vocabulary date filters — 20 November 2026
+
+- Implemented [date filters](docs/features/date-filters/README.md): local inclusive creation/last-review ranges, presets, never-reviewed mode and shared library/review/print/export state. No migration or deployment.
+- `npm run typecheck` passed; `npm test` passed 21/21; `npm run build` passed. Date tests also passed under America/New_York for DST coverage.
+- Fixture-backed headless Chrome checks passed for combined search/folder/date filters, presets, never-reviewed mode, review refresh, print result count, filtered CSV IDs, invalid-range blocking, clearing and reload. Desktop/mobile screenshots inspected; 390 px mobile had no horizontal overflow. API requests were intercepted with synthetic data; no personal database was accessed.
+- Targeted ESLint passed for new logic, component and tests. Full optional local ESLint reports 13 existing findings in legacy API typing, links/effects and capture tests. The local hook remains disabled; no rules were suppressed. No Sonar configuration/scanner or dedicated semantic review tool is available. Manual review covered null dates, local-day boundaries, filter intersections and export scope.
+- Initial sandbox junction test and dependency-resolution build attempts failed, then passed after the required permissions and isolated dependency installation. Browser checks required an isolated server outside sandbox; temporary test-script errors were corrected before the passing run.
+- Live database smoke tests, physical printing and deployment were not run. Existing user edits in the original checkout are preserved; this work uses an isolated feature worktree.
+
 ## Daily practice and related vocabulary — 20 November 2026
 
 - Implemented [daily practice](docs/features/daily-practice/README.md): fixed sessions of up to ten due words per browser-local day, exact-term sentence masking, server grading, transactional idempotent scheduling, stale/deleted-entry handling and optional Cambridge-related drafts.

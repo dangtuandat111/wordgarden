@@ -18,3 +18,5 @@ The index below lists records as they are created. Do not pre-populate it with h
 | Feature | Status | Summary |
 | --- | --- | --- |
 | [Daily practice](daily-practice/README.md) | verified | Daily sentence practice and optional Cambridge-related words. |
+
+| [Vocabulary date filters](date-filters/README.md) | verified | Filter saved vocabulary by addition or last-review date. |

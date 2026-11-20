@@ -21,3 +21,11 @@ The UI sends the entry's `version` with `PATCH /api/entries/:id`. The server che
 Opening **Luyện tập hôm nay** creates or resumes the user's local-date session of up to ten eligible due entries from the whole library. Questions use saved context or examples, hide the exact term, and submit answers to the server for grading. A question row lock and entry version guard atomically record the first result and update the existing schedule. Duplicate submissions return that result. Edited/deleted/reviewed entries are skipped. Empty libraries or no suitable sentences create no session.
 
 After submission or in word details, Cambridge relationship suggestions are loaded separately from practice. The learner opens a draft with **Tạo từ**, selects or enters meaning/examples, then explicitly saves. Fetch failures do not block practice, and cached source evidence may be used. No AI, automatic translation, or automatic entry creation is involved.
+
+## Vocabulary date filters
+
+**Lọc theo ngày** is shared between the library, flashcard review and print/export views. **Ngày thêm** uses the entry creation time (imports create fresh entries). **Lần ôn cuối** uses the existing last-review timestamp, including successful scheduling updates from daily practice. No schema or API change is required.
+
+Choose **Từ ngày** and/or **Đến ngày**, or use **Hôm nay**, **7 ngày qua** or **30 ngày qua**. Boundaries include entire calendar days in the browser timezone; presets include today. **Chưa ôn** selects entries with no review timestamp and clears the date bounds. Without bounds, the range mode does not restrict entries. A reversed range shows an error and blocks review, print and filtered export until corrected.
+
+Date filters intersect search, folder and due-only filters. Counts, review queue, print sheets and filtered CSV/JSON links use the same results. Empty results disable print and filtered downloads. **Xóa lọc ngày** resets only date controls. Selections survive view changes and reset on reload. **Luyện tập hôm nay** remains library-wide; settings backup still exports the whole library.
