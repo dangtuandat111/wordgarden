@@ -2,7 +2,7 @@
 
 ## Reset workspace
 
-`POST /api/reset` requires JSON `{ "confirmation": "RESET WORDGARDEN" }`, the exact configured `AUTH_URL` origin, and the current account. It deletes that user's database row with cascading folders, entries and review state. Returns `{ "ok": true }` with no-store caching. Invalid confirmation returns 400; missing/wrong origin returns 403. The next visit creates a fresh workspace; extension tokens tied to the deleted user return 401. Files already downloaded and extension storage must be removed separately. See [resources and reset](resources-and-reset.md).
+`POST /api/reset` requires JSON `{ "confirmation": "RESET WORDGARDEN" }`, the exact configured `AUTH_URL` origin, and the current account. It deletes that user's database row with cascading folders, entries and review state. Returns `{ "ok": true }` with no-store caching. Invalid confirmation returns 400; missing/wrong origin returns 403. The next visit creates a fresh workspace; extension tokens tied to the deleted user return 401. Files already downloaded and extension storage must be removed separately.
 
 Base URL: `http://localhost:3080` for Docker, `http://localhost:3000` for default host development. JSON responses include an `error` string on failure. Main API calls resolve the local user or require an Auth.js session in Google mode. State-changing calls require `Content-Type: application/json`; if an `Origin` header is present it must match `AUTH_URL`. Entries and folders are scoped to the user.
 
