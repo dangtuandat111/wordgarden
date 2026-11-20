@@ -15,3 +15,9 @@ The UI sends the entry's `version` with `PATCH /api/entries/:id`. The server che
 ## Import, export, and authentication
 
 `GET /api/export` reads only the current user's entries; optional IDs restrict the result. CSV is for spreadsheets. JSON includes content and folder information. `POST /api/import` validates the Wordgarden v1 envelope, upserts folder names, skips existing term/definition pairs, and creates new entries with fresh review scheduling. The default local account is resolved automatically. With `LOCAL_MODE=false`, Auth.js Google sign-in requires a verified, allowlisted email; API data access is scoped to that user. State-changing main API requests check `Origin` and JSON content type. Extension requests use their own ID/origin/token checks.
+
+## Daily practice and optional discovery
+
+Opening **Luyện tập hôm nay** creates or resumes the user's local-date session of up to ten eligible due entries from the whole library. Questions use saved context or examples, hide the exact term, and submit answers to the server for grading. A question row lock and entry version guard atomically record the first result and update the existing schedule. Duplicate submissions return that result. Edited/deleted/reviewed entries are skipped. Empty libraries or no suitable sentences create no session.
+
+After submission or in word details, Cambridge relationship suggestions are loaded separately from practice. The learner opens a draft with **Tạo từ**, selects or enters meaning/examples, then explicitly saves. Fetch failures do not block practice, and cached source evidence may be used. No AI, automatic translation, or automatic entry creation is involved.

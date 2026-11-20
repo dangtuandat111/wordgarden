@@ -8,6 +8,7 @@ Wordgarden helps an individual learner retain English words found while reading.
 | Context | Original sentence, optional translation, notes, tags, links, definition, and at most two extra examples. |
 | Dictionary | Best effort parsing of public Cambridge pages; choose a sense or compare manually. |
 | Review | New entries due immediately; remembering advances through 1, 3, 7, 14, 30 day intervals; forgetting schedules tomorrow. |
+| Daily practice | Up to ten due words per local day in persisted fill-in-the-blank sessions; optional Cambridge-related suggestions require explicit saving. |
 | Output | Browser print dialog for study sheets/worksheets; CSV and JSON export; JSON import. |
 | Capture | Chrome/Edge extension saves selected text and context in local mode. |
 | Accounts | Default local account; separately configurable Google OAuth and per-user isolation. |

@@ -31,6 +31,15 @@ $entry = @{ term='take off'; definition=''; folderId=$null; content=@{ sentence=
 Invoke-RestMethod "$baseUrl/api/entries" -Method Post -ContentType 'application/json' -Body $entry
 ```
 
+## Daily practice API
+
+- `POST /api/practice` accepts `{timezone}` with a valid IANA timezone and returns `{day,timezone,questions}`. Creates or resumes one session per user/local date, containing at most ten eligible due entries. Empty results create no session. The whole library is used independently of UI folder filters.
+- Unsubmitted questions contain only `id`, `position`, `prompt`, `submittedAt` and `skipped`. Terms, entry IDs, definitions, unmasked sentences and answers are withheld until submission.
+- `POST /api/practice/:questionId/answer` accepts `{answer}` (1–200 trimmed characters). Returns the submitted question plus `entryId`, `term`, `sentence`, `definition`, `meaningVi`, `answer`, and `correct`. Repeated submissions return the original result. Stale/deleted entries return `skipped:true,correct:null` without advancing the schedule. Owned-question lookup returns 404 for other users' IDs. Invalid input returns 400.
+- `GET /api/entries/:id/related` returns `{items,stale,message}`. Items contain `term`, `relation` (`synonym`, `antonym`, `word-family`, `related`), `url`, and `sourceUrl`. Returns at most five unsaved terms. Cambridge failure is a successful response with a message and available cached items, possibly empty. Unknown or unowned entries return 404. No entry is created by retrieving suggestions.
+
+These APIs use the existing account/origin/JSON checks. Reset cascades daily sessions, questions, and per-user related-word caches. At most two Cambridge pages are requested per uncached suggestion lookup; each has a six-second timeout, a two-megabyte body limit and no redirects. Only Cambridge HTTPS English dictionary and topic paths are fetched.
+
 ## Extension API
 
 These endpoints require `LOCAL_MODE=true` and a valid `X-Wordgarden-Extension` ID. If `Origin` is sent, it must be `chrome-extension://<same-id>`. `POST /api/extension/connect` requires JSON and returns `{token,folders,...}`. `GET /api/extension/folders` and `POST /api/extension/save` require `Authorization: Bearer <token>`. Save accepts entry input and returns `{id,duplicate,folderReset,message}`; duplicate may return HTTP 200, creation 201. Missing/invalid token returns 401, wrong mode or origin 403, invalid data 400, oversized save 413. Tokens are extension-bound and expire after 30 days. The save body has a 30,000-character limit.

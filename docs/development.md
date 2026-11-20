@@ -32,3 +32,17 @@ Remove-Item Env:TEST_URL
 ```
 
 For manual acceptance, save a word without a meaning, edit it, filter by folder, review it, exercise a Cambridge failure, print in Chrome/Edge, and check extension capture in a real browser when changing extension code. Confirm conflicts and errors are understandable. Before handing off, update relevant documentation and [verification evidence](../VERIFICATION.md), run the appropriate checks once, and record anything unverified. See [workflows](workflows.md) for expected behavior.
+
+## Daily-practice verification
+
+`scripts/practice-smoke.mjs` requires a disposable PostgreSQL database named `practice_test` at `127.0.0.1:55434`, plus a separate local server whose `DATABASE_URL` points there. It intentionally creates and deletes the local account in that database, including checking reset cascades. Never point the server at the regular app database. The script refuses other database names/ports.
+
+```powershell
+$env:DATABASE_URL='postgresql://practice_test:disposable_practice_only@127.0.0.1:55434/practice_test'
+$env:TEST_URL='http://localhost:3318'
+node scripts/practice-smoke.mjs
+Remove-Item Env:TEST_URL
+Remove-Item Env:DATABASE_URL
+```
+
+Run the committed migrations against that isolated database before starting the test server. Configure `LOCAL_MODE=true` and `AUTH_URL=http://localhost:3318` in the server process. Do not run the script against a server connected to personal data.

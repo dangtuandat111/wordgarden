@@ -1,6 +1,6 @@
 # User guide
 
-Open **http://localhost:3080** after starting the project. The left navigation contains the library, **Ôn tập**, and **In & xuất tệp**. The top right **Thêm từ mới** button opens the editor.
+Open **http://localhost:3080** after starting the project. The left navigation contains the library, **Ôn tập**, **Luyện tập hôm nay**, and **In & xuất tệp**. The top right **Thêm từ mới** button opens the editor.
 
 ## Save a word in context
 
@@ -17,6 +17,18 @@ Open settings using **Lưu từ khi lướt web** at the top right. Under **Qu�
 ## Review
 
 Choose **Ôn tập** on the left. Read the front, press **Lật thẻ xem nghĩa**, then **Đã nhớ** or **Chưa nhớ**. **Ẩn tiếng Việt** toggles translations. The card back also allows editing. Only due cards in the current folder appear; see [review scheduling](data-model.md#review-schedule).
+
+## Daily sentence practice and related words
+
+Choose **Luyện tập hôm nay** to practice up to ten due words from the whole library, oldest due first. The app uses your browser's timezone for the daily date. A fixed session is saved when eligible questions exist; reload or return later to resume it. Completing it does not create another session that day. An empty library starts no session.
+
+Each question masks every exact occurrence of the saved word or phrase in its original sentence or an example. Enter the English answer and press **Kiểm tra**. Grading ignores case, Unicode composition and extra whitespace, but does not accept synonyms, inflections or spelling errors. Correct answers advance the existing review schedule; incorrect answers reset it to tomorrow. Submitting a question again does not change scheduling twice. If the word was edited, deleted or reviewed elsewhere, the question is skipped without changing its schedule.
+
+Words without a suitable sentence remain available in **Ôn tập**. Use **Bổ sung ví dụ** to add a sentence containing the exact saved word. Newly saved entries keep the usual immediate due date and do not join an already created daily session.
+
+Word details and submitted practice answers show up to five optional **Từ liên quan** suggestions from Cambridge. Labels distinguish explicit synonyms, antonyms and word families from SMART Vocabulary topic relationships. Availability depends on Cambridge's page content and access; the app does not promise every relationship type. Successful results are cached for 24 hours, with older results usable during a source failure. No AI generates meanings or examples.
+
+Press **Tạo từ** to open an editable draft. Use **Tra Cambridge** or enter a meaning and examples yourself, then **Lưu từ** to add it. Closing the form adds nothing. Previously saved terms are excluded from suggestions. Daily sessions and suggestion caches are not included in JSON/CSV exports; use a database backup to preserve them.
 
 ## Print and move content
 

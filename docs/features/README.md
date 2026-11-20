@@ -17,4 +17,4 @@ The index below lists records as they are created. Do not pre-populate it with h
 
 | Feature | Status | Summary |
 | --- | --- | --- |
-| _No feature records yet_ | — | Add a row when the first feature starts. |
+| [Daily practice](daily-practice/README.md) | verified | Daily sentence practice and optional Cambridge-related words. |

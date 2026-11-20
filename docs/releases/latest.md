@@ -4,6 +4,6 @@ This page tracks only features accepted for development. It is **not** a release
 
 | Feature | Status | Record |
 | --- | --- | --- |
-| _No new feature records yet_ | — | — |
+| Daily practice and related vocabulary | verified | [Feature record](../features/daily-practice/README.md) |
 
 Existing behavior is described in the [project overview](../overview.md). Update this table when an approved feature enters development, and keep its status aligned with the feature record. Remove or move the row after release as appropriate.

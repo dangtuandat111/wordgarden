@@ -14,3 +14,23 @@ input,textarea,select{border:1px solid #dfe5d6;border-radius:6px;padding:10px 12
 @media screen and (max-width:480px){.entry-grid{grid-template-columns:1fr}.word-card{padding:20px}.word-title{font-size:27px}.card-top{margin-bottom:14px}.folder-tag{font-size:9px;padding:5px 8px}.word-pronunciation{margin-bottom:14px}.word-definition{-webkit-line-clamp:3;font-size:13px}.word-card blockquote{font-size:16px}.add-card{min-height:140px}.add-card strong{font-size:12px}.add-card small{font-size:10px}.word-vi{font-size:12px}}
 @media print{@page{size:A4;margin:17mm}*{-webkit-print-color-adjust:exact;print-color-adjust:exact}.no-print,.sidebar,.topbar,.toast{display:none!important}body{background:white;color:#222;font-size:10pt}.app-shell,.workspace{display:block;margin:0;width:100%}.content-wrap{padding:0;max-width:none}.print-sheet{border:0;box-shadow:none;padding:0;margin:0;max-width:none;min-height:0}.print-brand{margin-bottom:20px;font-size:17pt}.print-sheet>h2{font-size:24pt}.print-entry{break-inside:avoid-page;page-break-inside:avoid;box-decoration-break:clone}.print-folder{break-after:avoid}.print-entry h3{break-after:avoid;font-size:16pt}.print-entry .entry-body{font-size:10pt}.print-entry .definition-block p{font-size:10pt}.print-entry .example-block blockquote{font-size:11pt}.print-subtitle{font-size:9pt}.print-entry .source-links{display:none}.answer-key{break-before:page}.answer-key .print-entry{margin-bottom:15px}.answer-key p{font-size:10pt}.print-brand,.print-folder,.print-entry h3{color:#344a2a}.example-vi{font-size:9pt!important;color:#777}.print-entry .translation-block{background:#f6f7f1}.field-caption{font-size:7pt}.print-entry .notes-block{background:transparent;border:1px solid #ddd}mark{background:#edf1e4;color:#222}blockquote{orphans:2;widows:2}}
  .reset-card{margin-top:20px;border-color:#d9b1a0}.reset-card h2{display:flex;align-items:center;gap:9px}.reset-card p,.reset-dialog p{font-size:14px;line-height:1.8;overflow-wrap:anywhere}.reset-card code{overflow-wrap:anywhere}.reset-dialog label{font-size:14px}.reset-dialog .button-row{margin-top:20px}
+
+/* Daily practice and optional related-word suggestions. */
+.practice-card { min-height: 260px; display: flex; flex-direction: column; gap: 20px; align-items: stretch; }
+.practice-card blockquote { font-size: 1.3rem; line-height: 1.7; overflow-wrap: anywhere; }
+.practice-card input { width: 100%; min-height: 44px; padding: 12px; border: 1px solid #bdc9bc; border-radius: 10px; background: #fff; }
+.practice-result { background: #fffdf8; border: 1px solid #e3e7dc; border-radius: 18px; padding: 24px; margin: 20px 0; overflow-wrap: anywhere; }
+.related-words { border-top: 1px solid #e3e7dc; margin-top: 24px; padding-top: 20px; text-align: left; }
+.related-words > p { font-size: .88rem; line-height: 1.6; }
+.related-word { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-bottom: 1px solid #e3e7dc; }
+.related-word small, .related-word a { display: block; font-size: .78rem; margin-top: 5px; }
+.related-word > div { min-width: 0; overflow-wrap: anywhere; }
+.related-word button { flex-shrink: 0; }
+.daily-practice details { margin: 20px 0; }
+@media (max-width: 600px) { .practice-result { padding: 16px; } .related-word { flex-wrap: wrap; } }
+@media (max-width: 680px) {
+  .main-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding-right: 0; }
+  .main-nav > button { min-width: 0; white-space: normal; border-radius: 6px; }
+  .sidebar-bottom { top: 18px; bottom: auto; }
+  .page-heading > div:first-child { min-width: 0; }
+}
