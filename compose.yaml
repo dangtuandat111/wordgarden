@@ -1,0 +1,60 @@
+name: wordgarden
+x-logging: &bounded-logging
+  driver: json-file
+  options:
+    max-size: "5m"
+    max-file: "2"
+services:
+  web:
+    logging: *bounded-logging
+    build: .
+    ports:
+      - "127.0.0.1:3080:3000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://wordgarden:wordgarden@db:5432/wordgarden}
+      LOCAL_MODE: ${LOCAL_MODE:-true}
+      AUTH_SECRET: ${AUTH_SECRET:-local-only-change-before-sharing-this-server-2026}
+      AUTH_URL: ${AUTH_URL:-http://localhost:3080}
+      AUTH_TRUST_HOST: "true"
+      AUTH_GOOGLE_ID: ${AUTH_GOOGLE_ID:-}
+      AUTH_GOOGLE_SECRET: ${AUTH_GOOGLE_SECRET:-}
+      ALLOWED_EMAILS: ${ALLOWED_EMAILS:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+  migrate:
+    logging: *bounded-logging
+    build:
+      context: .
+      target: build
+    command: ["npm", "run", "db:migrate"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://wordgarden:wordgarden@db:5432/wordgarden}
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    logging: *bounded-logging
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: wordgarden
+      POSTGRES_PASSWORD: wordgarden
+      POSTGRES_DB: wordgarden
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wordgarden -d wordgarden"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+volumes:
+  database:

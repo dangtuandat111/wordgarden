@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Wordgarden — Lưu từ trong ngữ cảnh",
+  "version": "0.2.0",
+  "description": "Bôi đen từ để tra Cambridge hoặc lưu vào Wordgarden, kèm câu gốc. Không dùng AI.",
+  "permissions": ["contextMenus", "storage", "scripting", "activeTab"],
+  "optional_host_permissions": ["http://*/*", "https://*/*"],
+  "background": { "service_worker": "background.js" },
+  "action": { "default_popup": "popup.html", "default_title": "Wordgarden" }
+}

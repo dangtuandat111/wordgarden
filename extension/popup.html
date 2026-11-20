@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>Wordgarden</title><link rel="stylesheet" href="popup.css"></head>
+<body><header><span>✳</span><h1>wordgarden.</h1><small>LƯU TỪ NGAY KHI ĐỌC</small></header>
+<p class="intro">Bôi đen → bấm Lưu từ.<br>Giữ nguyên nhịp đọc của bạn.</p>
+<label>Địa chỉ ứng dụng<input id="appUrl" type="url" placeholder="http://localhost:3080"></label>
+<button id="connect">Kết nối Wordgarden</button>
+<label>Thư mục lưu mặc định<select id="folder"><option value="">Chưa phân loại</option></select></label>
+<p class="hint">Đổi thư mục là tự lưu thiết lập.</p>
+<section><button id="enable" class="secondary">Bật nút bôi đen trên trang này</button><button id="enableAll" class="secondary">Bật trên mọi website…</button><button id="disableAll" class="text">Tắt các nút bôi đen</button></section>
+<p id="status" role="status"></p><button id="retry" class="secondary" hidden>Thử lưu lại từ vừa lỗi</button>
+<button id="open" class="secondary">Mở thư viện ↗</button>
+<button id="reset" class="text">Xóa dữ liệu extension…</button>
+<footer>Luôn dùng được menu chuột phải → <strong>Lưu ngay vào Wordgarden</strong> sau khi kết nối. Từ, câu gốc và link chỉ được gửi khi bạn bấm lưu.</footer>
+<script src="popup.js"></script></body></html>

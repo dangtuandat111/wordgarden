@@ -1,0 +1,32 @@
+node_modules/
+.next/
+# Local environment and credentials; publish only the safe template.
+.env*
+!.env.example
+.npmrc
+.pypirc
+.ssh/
+.aws/
+secrets/
+credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Generated output and personal data.
+*.tsbuildinfo
+backups/
+test-results/
+exports/
+dumps/
+logs/
+*.log
+gitleaks-report*
+
+# Local agent settings and temporary tools.
+.codex/
+.agents/
+.tools/

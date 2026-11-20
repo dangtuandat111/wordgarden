@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+model User {
+  id String @id @default(cuid())
+  email String @unique
+  name String
+  folders Folder[]
+  entries Entry[]
+  createdAt DateTime @default(now())
+}
+model Folder {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name String
+  color String @default("sage")
+  entries Entry[]
+  createdAt DateTime @default(now())
+  @@unique([userId, name])
+}
+model Entry {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  folderId String?
+  folder Folder? @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  term String
+  normalizedTerm String
+  definition String
+  content Json
+  version Int @default(1)
+  reviewStage Int @default(0)
+  nextReviewAt DateTime @default(now())
+  reviewedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, normalizedTerm, definition])
+  @@index([userId, nextReviewAt])
+}
